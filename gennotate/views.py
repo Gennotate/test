@@ -101,44 +101,44 @@ def generate_images(generator, log_resolution, d_latent, device, mapping_network
         noise = get_noise(batch_size=batch_size, log_resolution=log_resolution, device=device)
         images = generator(w, noise)
         return images, w
-@api_view(['POST'])
-def generateImages(request):
-    if request.method == 'POST':
-        Generator_path = './savedModels/generator.pth'
-        Mapping_network_path = './savedModels/mapping_network.pth'
-        d_latent: int = 512
-        image_size = 256
-        mapping_network_layers: int = 8
-        log_resolution = int(math.log2(image_size))
-        if torch.cuda.is_available():
-            device = torch.device("cuda")
-            print("GPU is available. Using GPU.")
-        else:  
-            device = torch.device("cpu")
-            print("GPU is not available. Using CPU.")
-        generator = Generator(log_resolution=log_resolution ,d_latent=d_latent).to(device)
-        generator.load_state_dict(torch.load(Generator_path,map_location=device))
-        generator.eval()
-        mapping_network = MappingNetwork(d_latent,mapping_network_layers).to(device)
-        mapping_network.load_state_dict(torch.load(Mapping_network_path,map_location=device))
-        mapping_network.eval()
-        userId = request.data.get('userId')
-        user_instance = User.objects.get(id=userId)
-        num = int(request.data.get('num'))
-        total_images = num
-        os.system('cls')
-        for i in range(0,total_images):
-            torch.cuda.empty_cache()
-            batch_size = 1
-            imgs, w = generate_images(generator, log_resolution, d_latent, device, mapping_network, batch_size)
-            for r in range(batch_size):
-                image = torchvision.transforms.ToPILImage()(imgs[r])
-                img_bytes = BytesIO()
-                image.save(img_bytes, format='PNG')
-                img_bytes = img_bytes.getvalue()
-                cloudinary_response = cloudinary.uploader.upload(img_bytes)
-                cloudinary_url = cloudinary_response.get("url")
-                generated_image_instance = GeneratedImage(userId=user_instance, link=cloudinary_url, type=type)
-                generated_image_instance.save()
-        return Response({"message": "Data added to the database"}, status=status.HTTP_201_CREATED)
-    return Response({"message": "Nothing"}, status=status.HTTP_201_CREATED)
+# @api_view(['POST'])
+# def generateImages(request):
+#     if request.method == 'POST':
+#         Generator_path = './savedModels/generator.pth'
+#         Mapping_network_path = './savedModels/mapping_network.pth'
+#         d_latent: int = 512
+#         image_size = 256
+#         mapping_network_layers: int = 8
+#         log_resolution = int(math.log2(image_size))
+#         if torch.cuda.is_available():
+#             device = torch.device("cuda")
+#             print("GPU is available. Using GPU.")
+#         else:  
+#             device = torch.device("cpu")
+#             print("GPU is not available. Using CPU.")
+#         generator = Generator(log_resolution=log_resolution ,d_latent=d_latent).to(device)
+#         generator.load_state_dict(torch.load(Generator_path,map_location=device))
+#         generator.eval()
+#         mapping_network = MappingNetwork(d_latent,mapping_network_layers).to(device)
+#         mapping_network.load_state_dict(torch.load(Mapping_network_path,map_location=device))
+#         mapping_network.eval()
+#         userId = request.data.get('userId')
+#         user_instance = User.objects.get(id=userId)
+#         num = int(request.data.get('num'))
+#         total_images = num
+#         os.system('cls')
+#         for i in range(0,total_images):
+#             torch.cuda.empty_cache()
+#             batch_size = 1
+#             imgs, w = generate_images(generator, log_resolution, d_latent, device, mapping_network, batch_size)
+#             for r in range(batch_size):
+#                 image = torchvision.transforms.ToPILImage()(imgs[r])
+#                 img_bytes = BytesIO()
+#                 image.save(img_bytes, format='PNG')
+#                 img_bytes = img_bytes.getvalue()
+#                 cloudinary_response = cloudinary.uploader.upload(img_bytes)
+#                 cloudinary_url = cloudinary_response.get("url")
+#                 generated_image_instance = GeneratedImage(userId=user_instance, link=cloudinary_url, type=type)
+#                 generated_image_instance.save()
+#         return Response({"message": "Data added to the database"}, status=status.HTTP_201_CREATED)
+#     return Response({"message": "Nothing"}, status=status.HTTP_201_CREATED)
