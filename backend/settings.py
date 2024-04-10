@@ -12,7 +12,7 @@ import dj_database_url
 SECRET_KEY = 'django-insecure-zyg&2ofhm_jj$j_^!m+&!7kl8rt=0g872+(b2my5p)da!u_u4#'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS = ['.vercel.app']
+ALLOWED_HOSTS = []
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
