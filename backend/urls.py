@@ -6,6 +6,6 @@ urlpatterns = [
     path('api/', include('backend.api.urls')),
     re_path('api/signup/', views.signup, name='signup'),
     re_path('api/login/', views.login, name='login'),
-    path('generateImages/', views.generateImages, name='generateImages'),
+    # path('generateImages/', views.generateImages, name='generateImages'),
     path('getGeneratedImages/', views.getGeneratedImages, name='getGeneratedImages')
 ]
